@@ -1,31 +1,12 @@
 import { useParams } from 'react-router';
-import { companies } from '../lib/fake-data.js';
-import {useEffect, useState} from "react";
-import {getCompany, getJob, getJobs} from "../lib/graphql/queries.js";
 import JobList from "../components/JobList.jsx";
+import {useCompany} from "../lib/hooks.js";
+
 
 function CompanyPage() {
   const { companyId } = useParams();
-  const [state, setState] = useState({
-     company: null,
-     loading: true,
-     error: false
-  });
-
-useEffect(() => {
-    (async () => {
-        try {
-
-     const company = await getCompany(companyId);
-     setState({company, loading: false, error: false});
-        } catch {
-            setState({company: null, loading: false, error: true});
-        }
-    }
-)();
-},[]);
-
-const { company, loading ,error} = state;
+    const { company, loading, error} = useCompany(companyId);
+    console.log('company page', {company, loading, error});
     if(loading){
         return <div>Loading...</div>
     }
@@ -33,7 +14,6 @@ const { company, loading ,error} = state;
     if(error){
         return <div className="has-text-danger"> Data unavailable</div>;
     }
-
   return (
     <div>
       <h1 className="title">

@@ -1,6 +1,6 @@
 import { GraphQLError } from 'graphql';
 import { getCompany } from './db/companies.js';
-import {createJob, deleteJob, getJob, getJobs, getJobsByCompany, updateJob} from './db/jobs.js';
+import { createJob, deleteJob, getJob, getJobs, getJobsByCompany, updateJob } from './db/jobs.js';
 
 export const resolvers = {
     Query: {
@@ -21,6 +21,37 @@ export const resolvers = {
         jobs: () => getJobs(),
     },
 
+    Mutation: {
+        createJob: (_root, { input: { title, description } }, { user }) => {
+            if (!user) {
+                throw unauthorizedError('Missing authentication');
+            }
+            return createJob({ companyId: user.companyId, title, description });
+        },
+
+        deleteJob: async (_root, { id }, { user }) => {
+            if (!user) {
+                throw unauthorizedError('Missing authentication');
+            }
+            const job = await deleteJob(id, user.companyId);
+            if (!job) {
+                throw notFoundError('No Job found with id ' + id);
+            }
+            return job;
+        },
+
+        updateJob: async (_root, { input: { id, title, description } }, { user }) => {
+            if (!user) {
+                throw unauthorizedError('Missing authentication');
+            }
+            const job = await updateJob({ id, companyId: user.companyId, title, description });
+            if (!job) {
+                throw notFoundError('No Job found with id ' + id);
+            }
+            return job;
+        },
+    },
+
     Company: {
         jobs: (company) => getJobsByCompany(company.id),
     },
@@ -29,20 +60,6 @@ export const resolvers = {
         company: (job) => getCompany(job.companyId),
         date: (job) => toIsoDate(job.createdAt),
     },
-    //     mutate resolvers
-    Mutation: {
-        createJob: (_root, {input: {title, description}}, { user }) => {
-            if(!user){
-                throw unauthorizedError('Missing authentification');
-            }
-            return createJob({companyId: user.companyId, title, description})
-        },
-        deleteJob: (_root, id) => deleteJob(id),
-        updateJob: (_root, { input: {id, title, description}}) => {
-            return updateJob({id, title, description});
-        }
-    }
-
 };
 
 function notFoundError(message) {
@@ -60,5 +77,3 @@ function unauthorizedError(message) {
 function toIsoDate(value) {
     return value.slice(0, 'yyyy-mm-dd'.length);
 }
-
-

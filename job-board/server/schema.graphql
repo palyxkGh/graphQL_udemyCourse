@@ -8,6 +8,7 @@ type Query {
 #mutate
 
 type Mutation {
+    login(email: String!, password: String!): String
     #CREATE job
     createJob(input: CreateJobInput!): Job
     #DELETE job
