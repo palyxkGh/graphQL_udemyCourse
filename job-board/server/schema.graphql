@@ -1,47 +1,39 @@
-#query
+
 type Query {
-    jobs: [Job!]
-    job(id: ID!): Job,
     company(id: ID!): Company
+    job(id: ID!): Job
+    jobs: [Job!]
 }
 
-#mutate
-
 type Mutation {
-    login(email: String!, password: String!): String
-    #CREATE job
     createJob(input: CreateJobInput!): Job
-    #DELETE job
     deleteJob(id: ID!): Job
-    #    UPDATE
     updateJob(input: UpdateJobInput!): Job
 }
 
 type Company {
-    id: ID!,
+    id: ID!
     name: String!
-    description: String,
+    description: String
     jobs: [Job!]!
 }
-# Standard comment type
 
 type Job {
-    """This is a documentation comment for __data__ e.g: `2024-12-31`."""
-    id: ID!,
-    title: String!
+    id: ID!
+    """The __date__ when the job was published, in ISO-8601 format. E.g. `2022-12-31`."""
     date: String!
+    title: String!
     company: Company!
     description: String
 }
 
-#input
 input CreateJobInput {
     title: String!
     description: String
 }
 
 input UpdateJobInput {
-    id: ID!,
-    title: String!,
-    description: String!
+    id: ID!
+    title: String!
+    description: String
 }

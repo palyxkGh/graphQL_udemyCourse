@@ -1,6 +1,6 @@
 import { useParams } from 'react-router';
 import JobList from "../components/JobList.jsx";
-import {useCompany} from "../lib/hooks.js";
+import {useCompany} from "../lib/graphql/hooks.js";
 
 
 function CompanyPage() {
