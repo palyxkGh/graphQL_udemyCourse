@@ -1,4 +1,5 @@
 import { GraphQLResolveInfo } from 'graphql';
+import { CompanyEntity, JobEntity } from '../db/types';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -6,6 +7,7 @@ export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: 
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
+export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -17,7 +19,6 @@ export type Scalars = {
 };
 
 export type Company = {
-  __typename?: 'Company';
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   jobs: Array<Job>;
@@ -30,7 +31,6 @@ export type CreateJobInput = {
 };
 
 export type Job = {
-  __typename?: 'Job';
   company: Company;
   /** The __date__ when the job was published, in ISO-8601 format. E.g. `2022-12-31`. */
   date: Scalars['String']['output'];
@@ -40,13 +40,11 @@ export type Job = {
 };
 
 export type JobSubList = {
-  __typename?: 'JobSubList';
   items: Array<Job>;
   totalCount: Scalars['Int']['output'];
 };
 
 export type Mutation = {
-  __typename?: 'Mutation';
   createJob?: Maybe<Job>;
   deleteJob?: Maybe<Job>;
   updateJob?: Maybe<Job>;
@@ -68,7 +66,6 @@ export type MutationUpdateJobArgs = {
 };
 
 export type Query = {
-  __typename?: 'Query';
   company?: Maybe<Company>;
   job?: Maybe<Job>;
   jobs?: Maybe<JobSubList>;
@@ -168,12 +165,12 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
-  Company: ResolverTypeWrapper<Company>;
+  Company: ResolverTypeWrapper<CompanyEntity>;
   CreateJobInput: CreateJobInput;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
-  Job: ResolverTypeWrapper<Job>;
-  JobSubList: ResolverTypeWrapper<JobSubList>;
+  Job: ResolverTypeWrapper<JobEntity>;
+  JobSubList: ResolverTypeWrapper<Omit<JobSubList, 'items'> & { items: Array<ResolversTypes['Job']> }>;
   Mutation: ResolverTypeWrapper<{}>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
@@ -183,12 +180,12 @@ export type ResolversTypes = {
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
   Boolean: Scalars['Boolean']['output'];
-  Company: Company;
+  Company: CompanyEntity;
   CreateJobInput: CreateJobInput;
   ID: Scalars['ID']['output'];
   Int: Scalars['Int']['output'];
-  Job: Job;
-  JobSubList: JobSubList;
+  Job: JobEntity;
+  JobSubList: Omit<JobSubList, 'items'> & { items: Array<ResolversParentTypes['Job']> };
   Mutation: {};
   Query: {};
   String: Scalars['String']['output'];

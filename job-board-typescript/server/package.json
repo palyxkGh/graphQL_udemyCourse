@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "start": "nodemon src/server.ts",
+    "start": "concurrently \"nodemon src/server.ts\" \"graphql-codegen --config codegen.json --watch\"",
     "codegen": "graphql-codegen --config codegen.json"
   },
   "dependencies": {
@@ -27,6 +27,7 @@
     "@graphql-typed-document-node/core": "^3.2.0",
     "@tsconfig/node18": "^18.2.2",
     "@types/cors": "^2.8.14",
+    "concurrently": "^9.1.2",
     "graphql": "^16.11.0",
     "nodemon": "^3.0.1",
     "tsx": "^4.6.2",
