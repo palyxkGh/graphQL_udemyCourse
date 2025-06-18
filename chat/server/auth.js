@@ -10,10 +10,17 @@ export const authMiddleware = expressjwt({
   secret,
 });
 
+
+export function decodeToken(token){
+  return jwt.verify(token, secret);
+}
+
+
 export async function handleLogin(req, res) {
   const { username, password } = req.body;
   const user = await getUser(username);
   if (!user || user.password !== password) {
+    console.log('here!');
     res.sendStatus(401);
   } else {
     const claims = { sub: username };

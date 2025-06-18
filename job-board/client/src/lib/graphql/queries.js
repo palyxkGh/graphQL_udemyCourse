@@ -80,3 +80,4 @@ export const createJobMutation = gql`
     }
     ${jobDetailFragment}
 `;
+

@@ -1,6 +1,8 @@
 import { GraphQLError } from 'graphql';
 import { createMessage, getMessages } from './db/messages.js';
+import {PubSub} from 'graphql-subscriptions';
 
+const pubSub = new PubSub();
 export const resolvers = {
   Query: {
     messages: (_root, _args, { user }) => {
@@ -10,11 +12,22 @@ export const resolvers = {
   },
 
   Mutation: {
-    addMessage: (_root, { text }, { user }) => {
+    addMessage: async (_root, { text }, { user }) => {
       if (!user) throw unauthorizedError();
-      return createMessage(user, text);
+      const message = await createMessage(user, text);
+      await pubSub.publish('MESSAGE_ADDED', {messageAdded: message});
+      return message;
     },
   },
+
+  Subscription: {
+    messageAdded: {
+      subscribe: (_root, _args, { user }) => {
+        if(!user) throw unauthorizedError();
+        pubSub.asyncIterableIterator('MESSAGE_ADDED');
+      }
+    }
+  }
 };
 
 function unauthorizedError() {

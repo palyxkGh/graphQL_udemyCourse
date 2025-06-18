@@ -1,5 +1,5 @@
 async function fetchGreeting() {
-    const response = await fetch('http://localhost:9000/', {
+    const response = await fetch('http://localhost:9001/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
